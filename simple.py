@@ -1,3 +1,5 @@
+# Simple Machine
+
 import sys
 
 PRINT_BEEJ     = 1
