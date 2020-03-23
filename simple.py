@@ -56,7 +56,7 @@ while running:
     elif command == PRINT_REGISTER:
         reg = memory[pc + 1]
         print(register[reg])
-        pc +=2
+        pc += 2
     elif command == ADD:
         reg_a = memory[pc + 1]
         reg_b = memory[pc + 2]
