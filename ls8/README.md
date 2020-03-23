@@ -60,6 +60,9 @@ but you'll have to implement those three above instructions first!
 ## Step 0: IMPORTANT: inventory what is here!
 
 * Make a list of files here.
+> cpu.py --> Where the instructions for my logic will go<br>
+> ls8.py --> The file that will run my instructions<br>
+> print8.ls8 --> The byte code file which I will load and interpret<br>
 * Write a short 3-10-word description of what each file does.
 * Note what has been implemented, and what hasn't.
 * Read this whole file.
