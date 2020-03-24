@@ -14,6 +14,7 @@ class CPU:
         self.HLT = 0b00000001
         self.LDI = 0b10000010
         self.PRN = 0b01000111
+        self.MUL = 0b10100010
 
     def load(self, program_file):
         """Load a program into memory."""
@@ -30,19 +31,24 @@ class CPU:
             print(f"File '{program_file}' not found")
             sys.exit(2)
 
+    def ram_read(self, mar):
+        return self.ram[mar]
+
+    def ram_write(self, mar, mdr):
+        self.ram[mar] = mdr
+
     def alu(self, op, reg_a, reg_b):
-        """ALU operations."""
-        if op == "ADD":
+        """ALU operations"""
+        if op == 'ADD':
             self.reg[reg_a] += self.reg[reg_b]
+        elif op == 'MUL':
+            self.reg[reg_a] *= self.reg[reg_b]
         # elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
 
     def trace(self):
-        """
-        Handy function to print out the CPU state. You might want to call this
-        from run() if you need help debugging.
-        """
+        """Handy function to print out the CPU state. You might want to call this from run() if you need help debugging"""
         print(f"TRACE: %02X | %02X %02X %02X |" % (
             self.pc,
             # self.fl,
@@ -56,7 +62,7 @@ class CPU:
         print()
 
     def run(self):
-        """Run the CPU."""
+        """Run the CPU"""
         # self.trace()
         while self.pc < len(self.ram):
             ir = self.ram_read(self.pc)
@@ -70,12 +76,9 @@ class CPU:
             elif ir == self.PRN:
                 print(self.reg[operand_a])
                 self.pc += 2
+            elif ir == self.MUL:
+                self.alu('MUL', operand_a, operand_b)
+                self.pc += 3
             else:
                 print(f'Unknown instruction: {ir}')
                 exit()
-
-    def ram_read(self, mar):
-        return self.ram[mar]
-
-    def ram_write(self, mar, mdr):
-        self.ram[mar] = mdr
