@@ -47,8 +47,8 @@ class CPU:
         """
         print(f"TRACE: %02X | %02X %02X %02X |" % (
             self.pc,
-            #self.fl,
-            #self.ie,
+            # self.fl,
+            # self.ie,
             self.ram_read(self.pc),
             self.ram_read(self.pc + 1),
             self.ram_read(self.pc + 2)
@@ -76,8 +76,8 @@ class CPU:
                 print(f'Unknown instruction: {ir}')
                 exit()
 
-    def ram_read(self, MAR):
-        return self.ram[MAR]
+    def ram_read(self, mar):
+        return self.ram[mar]
 
-    def ram_write(self, MAR, MDR):
-        self.ram[MAR] = MDR
+    def ram_write(self, mar, mdr):
+        self.ram[mar] = mdr
