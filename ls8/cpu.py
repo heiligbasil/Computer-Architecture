@@ -9,8 +9,8 @@ class CPU:
     def __init__(self):
         """Construct a new CPU."""
         self.pc = 0
-        self.reg = [0] * 8
-        self.ram = [0 & 0xFF] * 8
+        self.reg = [bin(0)] * 8
+        self.ram = [bin(0)] * 256
         self.HLT = 0b00000001
         self.LDI = 0b10000010
         self.PRN = 0b01000111
@@ -21,10 +21,10 @@ class CPU:
         try:
             with open(program_file) as file:
                 for each_line in file:
-                    broken_line=each_line.split('#')
-                    instruction=broken_line[0].strip()
+                    broken_line = each_line.split('#')
+                    instruction = broken_line[0].strip()
                     if instruction != '':
-                        self.ram[address] = instruction
+                        self.ram[address] = int(instruction, 2)
                         address += 1
         except FileNotFoundError:
             print(f"File '{program_file}' not found")
