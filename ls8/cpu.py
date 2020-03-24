@@ -15,6 +15,11 @@ class CPU:
         self.LDI = 0b10000010
         self.PRN = 0b01000111
         self.MUL = 0b10100010
+        self.branch_table = dict()
+        self.branch_table[self.HLT] = self.fun_hlt
+        self.branch_table[self.LDI] = self.fun_ldi
+        self.branch_table[self.PRN] = self.fun_prn
+        self.branch_table[self.MUL] = self.fun_mul
 
     def load(self, program_file):
         """Load a program into memory."""
@@ -68,17 +73,27 @@ class CPU:
             ir = self.ram_read(self.pc)
             operand_a = self.ram_read(self.pc + 1)
             operand_b = self.ram_read(self.pc + 2)
-            if ir == self.HLT:
-                break
-            elif ir == self.LDI:
-                self.reg[operand_a] = operand_b
-                self.pc += 3
-            elif ir == self.PRN:
-                print(self.reg[operand_a])
-                self.pc += 2
-            elif ir == self.MUL:
-                self.alu('MUL', operand_a, operand_b)
-                self.pc += 3
-            else:
+            try:
+                self.branch_table[ir](operand_a, operand_b)
+            except KeyError:
                 print(f'Unknown instruction: {ir}')
-                exit()
+                exit(2)
+
+    def fun_hlt(self, operand_a, operand_b):
+        print('HLT encountered... exiting.')
+        exit(1)
+
+    def fun_ldi(self, operand_a, operand_b):
+        print('LDI encountered... registering...')
+        self.reg[operand_a] = operand_b
+        self.pc += 3
+
+    def fun_prn(self, operand_a, operand_b):
+        print('PRN encountered... printing...')
+        print(self.reg[operand_a])
+        self.pc += 2
+
+    def fun_mul(self, operand_a, operand_b):
+        print('MUL encountered... multiplying...')
+        self.alu('MUL', operand_a, operand_b)
+        self.pc += 3
