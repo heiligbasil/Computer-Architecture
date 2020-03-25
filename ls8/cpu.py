@@ -79,7 +79,8 @@ class CPU:
                 print(f'Unknown instruction: {ir}')
                 exit(2)
 
-    def fun_hlt(self, operand_a, operand_b):
+    @staticmethod
+    def fun_hlt(operand_a, operand_b):
         print('HLT encountered... exiting.')
         exit(1)
 
