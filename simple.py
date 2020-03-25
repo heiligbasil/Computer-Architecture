@@ -8,12 +8,15 @@ PRINT_NUM      = 3
 SAVE           = 4  # Save a value to a register
 PRINT_REGISTER = 5  # Print a value from a register
 ADD            = 6  # regA += regB
+PUSH           = 7
+POP            = 8
 
-memory = [bin(0)] * 256
-register = [bin(0)] * 8
+memory = [0] * 32
+register = [0] * 8
 
 pc = 0
 running = True
+sp = 7
 
 
 def load_memory(filename):
@@ -45,6 +48,9 @@ load_memory(arg_filename)
 
 while running:
     command = memory[pc]
+    print(memory)
+    print(register)
+    print('------')
     if command == PRINT_BEEJ:
         print('Beej!')
         pc += 1
@@ -69,6 +75,18 @@ while running:
         reg_b = memory[pc + 2]
         register[reg_a] += register[reg_b]
         pc += 3
+    elif command == PUSH:
+        reg = memory[pc + 1]
+        val = register[reg]
+        register[sp] = (register[sp] - 1) % (len(memory))
+        memory[register[sp]] = val
+        pc += 2
+    elif command == POP:
+        reg = memory[pc + 1]
+        val = memory[register[sp]]
+        register[reg] = val
+        register[sp] += 1
+        pc += 2
     else:
         print(f'Unknown instruction: {command}')
         sys.exit(1)
