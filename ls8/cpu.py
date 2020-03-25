@@ -75,6 +75,7 @@ class CPU:
             operand_b = self.ram_read(self.pc + 2)
             try:
                 self.branch_table[ir](operand_a, operand_b)
+                self.pc += (ir >> 6) + 1
             except KeyError:
                 print(f'Unknown instruction: {ir}')
                 exit(2)
@@ -87,14 +88,11 @@ class CPU:
     def fun_ldi(self, operand_a, operand_b):
         print('LDI encountered... registering...')
         self.reg[operand_a] = operand_b
-        self.pc += 3
 
     def fun_prn(self, operand_a, operand_b):
         print('PRN encountered... printing...')
         print(self.reg[operand_a])
-        self.pc += 2
 
     def fun_mul(self, operand_a, operand_b):
         print('MUL encountered... multiplying...')
         self.alu('MUL', operand_a, operand_b)
-        self.pc += 3
