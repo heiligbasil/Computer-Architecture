@@ -48,9 +48,9 @@ load_memory(arg_filename)
 
 while running:
     command = memory[pc]
-    print(memory)
-    print(register)
-    print('------')
+    print(f'Memory: {memory}')
+    print(f'Registers: {register}')
+    print('----------')
     if command == PRINT_BEEJ:
         print('Beej!')
         pc += 1
