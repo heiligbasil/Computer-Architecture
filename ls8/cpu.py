@@ -19,6 +19,8 @@ class CPU:
         self.MUL = 0b10100010
         self.PUS = 0b01000101
         self.POP = 0b01000110
+        self.CAL = 0b01010000
+        self.RET = 0b00010001
         self.branch_table = dict()
         self.branch_table[self.HLT] = self.fun_hlt
         self.branch_table[self.LDI] = self.fun_ldi
@@ -26,6 +28,8 @@ class CPU:
         self.branch_table[self.MUL] = self.fun_mul
         self.branch_table[self.PUS] = self.fun_pus
         self.branch_table[self.POP] = self.fun_pop
+        self.branch_table[self.CAL] = self.fun_cal
+        self.branch_table[self.RET] = self.fun_ret
 
     def load(self, program_file):
         """Load a program into memory."""
@@ -112,3 +116,9 @@ class CPU:
         print('POP encountered... x...')
         self.reg[operand_a] = self.ram[self.reg[self.sp]]
         self.reg[self.sp] += 1
+
+    def fun_cal(self, operand_a, operand_b):
+        pass
+
+    def fun_ret(self, operand_a, operand_b):
+        pass
