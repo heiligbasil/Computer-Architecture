@@ -10,6 +10,8 @@ PRINT_REGISTER = 5  # Print a value from a register
 ADD            = 6  # regA += regB
 PUSH           = 7
 POP            = 8
+CALL           = 9
+RET            = 10
 
 memory = [0] * 32
 register = [0] * 8
@@ -50,6 +52,7 @@ while running:
     command = memory[pc]
     print(f'Memory: {memory}')
     print(f'Registers: {register}')
+    print(f'Address: {pc}')
     print('----------')
     if command == PRINT_BEEJ:
         print('Beej!')
@@ -87,6 +90,15 @@ while running:
         register[reg] = val
         register[sp] += 1
         pc += 2
+    elif command == CALL:
+        register[sp] -= 1
+        memory[register[sp]] = pc + 2
+
+        reg = memory[pc + 1]
+        pc = register[reg]
+    elif command == RET:
+        pc = memory[register[sp]]
+        register[sp] += 1
     else:
         print(f'Unknown instruction: {command}')
         sys.exit(1)
