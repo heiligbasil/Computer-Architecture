@@ -9,17 +9,23 @@ class CPU:
     def __init__(self):
         """Construct a new CPU."""
         self.pc = 0
+        self.sp = 7
         self.reg = [0] * 8
         self.ram = [0] * 256
+        self.reg[self.sp] = 0xF4
         self.HLT = 0b00000001
         self.LDI = 0b10000010
         self.PRN = 0b01000111
         self.MUL = 0b10100010
+        self.PUS = 0b01000101
+        self.POP = 0b01000110
         self.branch_table = dict()
         self.branch_table[self.HLT] = self.fun_hlt
         self.branch_table[self.LDI] = self.fun_ldi
         self.branch_table[self.PRN] = self.fun_prn
         self.branch_table[self.MUL] = self.fun_mul
+        self.branch_table[self.PUS] = self.fun_pus
+        self.branch_table[self.POP] = self.fun_pop
 
     def load(self, program_file):
         """Load a program into memory."""
@@ -75,7 +81,7 @@ class CPU:
             operand_b = self.ram_read(self.pc + 2)
             try:
                 self.branch_table[ir](operand_a, operand_b)
-                self.pc += (ir >> 6) + 1
+                self.pc += ((ir >> 6) & 0xFF) + 1
             except KeyError:
                 print(f'Unknown instruction: {ir}')
                 exit(2)
@@ -96,3 +102,13 @@ class CPU:
     def fun_mul(self, operand_a, operand_b):
         print('MUL encountered... multiplying...')
         self.alu('MUL', operand_a, operand_b)
+
+    def fun_pus(self, operand_a, operand_b):
+        print('PUSH encountered... ...')
+        self.reg[self.sp] -= 1
+        self.ram[self.reg[self.sp]] = self.reg[operand_a]
+
+    def fun_pop(self, operand_a, operand_b):
+        print('POP encountered... x...')
+        self.reg[operand_a] = self.ram[self.reg[self.sp]]
+        self.reg[self.sp] += 1
