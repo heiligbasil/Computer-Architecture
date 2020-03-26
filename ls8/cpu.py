@@ -16,6 +16,7 @@ class CPU:
         self.HLT = 0b00000001
         self.LDI = 0b10000010
         self.PRN = 0b01000111
+        self.ADD = 0b10100000
         self.MUL = 0b10100010
         self.PUS = 0b01000101
         self.POP = 0b01000110
@@ -25,6 +26,7 @@ class CPU:
         self.branch_table[self.HLT] = self.fun_hlt
         self.branch_table[self.LDI] = self.fun_ldi
         self.branch_table[self.PRN] = self.fun_prn
+        self.branch_table[self.ADD] = self.fun_add
         self.branch_table[self.MUL] = self.fun_mul
         self.branch_table[self.PUS] = self.fun_pus
         self.branch_table[self.POP] = self.fun_pop
@@ -85,7 +87,8 @@ class CPU:
             operand_b = self.ram_read(self.pc + 2)
             try:
                 self.branch_table[ir](operand_a, operand_b)
-                self.pc += ((ir >> 6) & 0xFF) + 1
+                if ir not in [self.CAL, self.RET]:
+                    self.pc += ((ir >> 6) & 0xFF) + 1
             except KeyError:
                 print(f'Unknown instruction: {ir}')
                 exit(2)
@@ -103,22 +106,31 @@ class CPU:
         print('PRN encountered... printing...')
         print(self.reg[operand_a])
 
+    def fun_add(self, operand_a, operand_b):
+        print('ADD encountered... adding...')
+        self.alu('ADD', operand_a, operand_b)
+
     def fun_mul(self, operand_a, operand_b):
         print('MUL encountered... multiplying...')
         self.alu('MUL', operand_a, operand_b)
 
     def fun_pus(self, operand_a, operand_b):
-        print('PUSH encountered... ...')
+        print('PUSH encountered... pushing to stack...')
         self.reg[self.sp] -= 1
         self.ram[self.reg[self.sp]] = self.reg[operand_a]
 
     def fun_pop(self, operand_a, operand_b):
-        print('POP encountered... x...')
+        print('POP encountered... popping from stack...')
         self.reg[operand_a] = self.ram[self.reg[self.sp]]
         self.reg[self.sp] += 1
 
     def fun_cal(self, operand_a, operand_b):
-        pass
+        print('CALL encountered... skipping to subroutine...')
+        self.reg[self.sp] -= 1
+        self.ram[self.reg[self.sp]] = self.pc + 2
+        self.pc = self.reg[operand_a]
 
     def fun_ret(self, operand_a, operand_b):
-        pass
+        print('RET encountered... returning from subroutine...')
+        self.pc = self.ram[self.reg[self.sp]]
+        self.reg[self.sp] += 1
