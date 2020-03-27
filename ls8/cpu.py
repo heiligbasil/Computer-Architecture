@@ -10,6 +10,7 @@ class CPU:
         """Construct a new CPU."""
         self.pc = 0
         self.sp = 7
+        self.fl = 0b00000000
         self.reg = [0] * 8
         self.ram = [0] * 256
         self.reg[self.sp] = 0xF4
@@ -22,6 +23,10 @@ class CPU:
         self.POP = 0b01000110
         self.CAL = 0b01010000
         self.RET = 0b00010001
+        self.CMP = 0b10100111
+        self.JMP = 0b01010100
+        self.JEQ = 0b01010101
+        self.JNE = 0b01010110
         self.branch_table = dict()
         self.branch_table[self.HLT] = self.fun_hlt
         self.branch_table[self.LDI] = self.fun_ldi
@@ -32,6 +37,10 @@ class CPU:
         self.branch_table[self.POP] = self.fun_pop
         self.branch_table[self.CAL] = self.fun_cal
         self.branch_table[self.RET] = self.fun_ret
+        self.branch_table[self.CMP] = self.fun_cmp
+        self.branch_table[self.JMP] = self.fun_jmp
+        self.branch_table[self.JEQ] = self.fun_jeq
+        self.branch_table[self.JNE] = self.fun_jne
 
     def load(self, program_file):
         """Load a program into memory."""
@@ -60,6 +69,11 @@ class CPU:
             self.reg[reg_a] += self.reg[reg_b]
         elif op == 'MUL':
             self.reg[reg_a] *= self.reg[reg_b]
+        elif op == 'CMP':
+            if reg_a == reg_b:
+                self.fl = 0b1
+            else:
+                self.fl = 0b0
         # elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
@@ -134,3 +148,17 @@ class CPU:
         print('RET encountered... returning from subroutine...')
         self.pc = self.ram[self.reg[self.sp]]
         self.reg[self.sp] += 1
+
+    def fun_cmp(self, operand_a, operand_b):
+        print('CMP encountered... comparing register values...')
+        self.alu('CMP', operand_a, operand_b)
+
+    def fun_jmp(self, operand_a, operand_b):
+        print('JMP encountered... jumping')
+        self.pc = self.reg[operand_a]
+
+    def fun_jeq(self, operand_a, operand_b):
+        pass
+
+    def fun_jne(self, operand_a, operand_b):
+        pass
