@@ -70,7 +70,7 @@ class CPU:
         elif op == 'MUL':
             self.reg[reg_a] *= self.reg[reg_b]
         elif op == 'CMP':
-            if reg_a == reg_b:
+            if self.reg[reg_a] == self.reg[reg_b]:
                 self.fl = 0b1
             else:
                 self.fl = 0b0
@@ -101,7 +101,7 @@ class CPU:
             operand_b = self.ram_read(self.pc + 2)
             try:
                 self.branch_table[ir](operand_a, operand_b)
-                if ir not in [self.CAL, self.RET]:
+                if ir not in [self.CAL, self.RET, self.JMP, self.JEQ, self.JNE]:
                     self.pc += ((ir >> 6) & 0xFF) + 1
             except KeyError:
                 print(f'Unknown instruction: {ir}')
@@ -154,13 +154,19 @@ class CPU:
         self.alu('CMP', operand_a, operand_b)
 
     def fun_jmp(self, operand_a, operand_b):
-        print('JMP encountered... jumping')
+        print('JMP encountered... jumping...')
         self.pc = self.reg[operand_a]
 
     def fun_jeq(self, operand_a, operand_b):
         print('JEQ encountered... jumping if equal...')
         if self.fl == 0b1:
             self.pc = self.reg[operand_a]
+        else:
+            self.pc += 2
 
     def fun_jne(self, operand_a, operand_b):
-        pass
+        print('JNE encountered... jumping if not equal...')
+        if self.fl == 0b0:
+            self.pc = self.reg[operand_a]
+        else:
+            self.pc += 2
