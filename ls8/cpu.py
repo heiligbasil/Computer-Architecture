@@ -158,7 +158,9 @@ class CPU:
         self.pc = self.reg[operand_a]
 
     def fun_jeq(self, operand_a, operand_b):
-        pass
+        print('JEQ encountered... jumping if equal...')
+        if self.fl == 0b1:
+            self.pc = self.reg[operand_a]
 
     def fun_jne(self, operand_a, operand_b):
         pass
