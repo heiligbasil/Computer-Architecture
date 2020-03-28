@@ -9,6 +9,7 @@ class CPU:
     def __init__(self):
         """Construct a new CPU."""
         self.pc = 0
+        self.isr = 6
         self.sp = 7
         self.fl = 0b00000000
         self.reg = [0] * 8
@@ -17,6 +18,7 @@ class CPU:
         self.HLT = 0b00000001
         self.LDI = 0b10000010
         self.PRN = 0b01000111
+        self.PRA = 0b01001000
         self.ADD = 0b10100000
         self.MUL = 0b10100010
         self.PUS = 0b01000101
@@ -27,10 +29,12 @@ class CPU:
         self.JMP = 0b01010100
         self.JEQ = 0b01010101
         self.JNE = 0b01010110
+        self.ST = 0b10000100
         self.branch_table = dict()
         self.branch_table[self.HLT] = self.fun_hlt
         self.branch_table[self.LDI] = self.fun_ldi
         self.branch_table[self.PRN] = self.fun_prn
+        self.branch_table[self.PRA] = self.fun_pra
         self.branch_table[self.ADD] = self.fun_add
         self.branch_table[self.MUL] = self.fun_mul
         self.branch_table[self.PUS] = self.fun_pus
@@ -41,6 +45,7 @@ class CPU:
         self.branch_table[self.JMP] = self.fun_jmp
         self.branch_table[self.JEQ] = self.fun_jeq
         self.branch_table[self.JNE] = self.fun_jne
+        self.branch_table[self.ST] = self.fun_st
 
     def load(self, program_file):
         """Load a program into memory."""
@@ -120,6 +125,10 @@ class CPU:
         print('PRN encountered... printing...')
         print(self.reg[operand_a])
 
+    def fun_pra(self, operand_a, operand_b):
+        print('PRA encountered... printing...')
+        print(self.reg[operand_a])
+
     def fun_add(self, operand_a, operand_b):
         print('ADD encountered... adding...')
         self.alu('ADD', operand_a, operand_b)
@@ -170,3 +179,7 @@ class CPU:
             self.pc = self.reg[operand_a]
         else:
             self.pc += 2
+
+    def fun_st(self, operand_a, operand_b):
+        print('ST encountered... registering...')
+        self.ram_write(self.reg[operand_a], self.reg[operand_b])
