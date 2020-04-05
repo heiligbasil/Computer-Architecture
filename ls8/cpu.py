@@ -127,7 +127,7 @@ class CPU:
 
     def fun_pra(self, operand_a, operand_b):
         print('PRA encountered... printing...')
-        print(self.reg[operand_a])
+        print(chr(self.reg[operand_a]))
 
     def fun_add(self, operand_a, operand_b):
         print('ADD encountered... adding...')
