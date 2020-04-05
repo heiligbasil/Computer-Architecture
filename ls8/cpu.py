@@ -30,6 +30,8 @@ class CPU:
         self.JEQ = 0b01010101
         self.JNE = 0b01010110
         self.ST = 0b10000100
+        self.AND = 0b10101000
+        self.XOR = 0b10101011
         self.branch_table = dict()
         self.branch_table[self.HLT] = self.fun_hlt
         self.branch_table[self.LDI] = self.fun_ldi
@@ -46,6 +48,8 @@ class CPU:
         self.branch_table[self.JEQ] = self.fun_jeq
         self.branch_table[self.JNE] = self.fun_jne
         self.branch_table[self.ST] = self.fun_st
+        self.branch_table[self.AND] = self.fun_and
+        self.branch_table[self.XOR] = self.fun_xor
 
     def load(self, program_file):
         """Load a program into memory."""
@@ -58,6 +62,7 @@ class CPU:
                     if instruction != '':
                         self.ram[address] = int(instruction, 2)
                         address += 1
+            print(f'Loaded {address} lines into memory.')
         except FileNotFoundError:
             print(f"File '{program_file}' not found")
             sys.exit(2)
@@ -79,20 +84,24 @@ class CPU:
                 self.fl = 0b1
             else:
                 self.fl = 0b0
+        elif op == 'AND':
+            self.reg[reg_a] = self.reg[reg_a] & self.reg[reg_b]
+        elif op == 'XOR':
+            self.reg[reg_a] = self.reg[reg_a] ^ self.reg[reg_b]
         # elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
 
     def trace(self):
         """Handy function to print out the CPU state. You might want to call this from run() if you need help debugging"""
-        print(f"TRACE: %02X | %02X %02X %02X |" % (
-            self.pc,
-            # self.fl,
-            # self.ie,
-            self.ram_read(self.pc),
-            self.ram_read(self.pc + 1),
-            self.ram_read(self.pc + 2)
-        ), end='')
+        # print(f"TRACE: %02X | %02X %02X %02X |" % (
+        #     self.pc,
+        #     # self.fl,
+        #     # self.ie,
+        #     self.ram_read(self.pc),
+        #     self.ram_read(self.pc + 1),
+        #     self.ram_read(self.pc + 2)
+        # ), end='')
         for i in range(8):
             print(" %02X" % self.reg[i], end='')
         print()
@@ -101,6 +110,7 @@ class CPU:
         """Run the CPU"""
         # self.trace()
         while self.pc < len(self.ram):
+            print(f'[{self.pc + 1}]: ', end='')
             ir = self.ram_read(self.pc)
             operand_a = self.ram_read(self.pc + 1)
             operand_b = self.ram_read(self.pc + 2)
@@ -183,3 +193,11 @@ class CPU:
     def fun_st(self, operand_a, operand_b):
         print('ST encountered... registering...')
         self.ram_write(self.reg[operand_a], self.reg[operand_b])
+
+    def fun_and(self, operand_a, operand_b):
+        print('AND encountered... bitwising...')
+        self.alu('AND', operand_a, operand_b)
+
+    def fun_xor(self, operand_a, operand_b):
+        print('XOR encountered... bitwising...')
+        self.alu('XOR', operand_a, operand_b)
